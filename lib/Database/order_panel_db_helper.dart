@@ -122,14 +122,16 @@ class OrderHelper {
     loadData(); // Load existing order data on initialization
   }
 
-  double getCurrentMerchantDiscount(Map<String, dynamic> order) {
-    final products = (order['products'] as List?) ?? [];
-
-    double currentGross = 0.0;
-    for (var p in products) {
-      final price = double.tryParse(p['price']?.toString() ?? '0') ?? 0.0;
-      final qty = int.tryParse(p['quantity']?.toString() ?? '1') ?? 1;
-      currentGross += price * qty;
+  double getCurrentMerchantDiscount(Map<String, dynamic> order,
+      {double? grossTotal, double? orderDiscount, double? orderTax}) {
+    double currentGross = grossTotal ?? 0.0;
+    if (grossTotal == null) {
+      final products = (order['products'] as List?) ?? [];
+      for (var p in products) {
+        final price = double.tryParse(p['price']?.toString() ?? '0') ?? 0.0;
+        final qty = int.tryParse(p['quantity']?.toString() ?? '1') ?? 1;
+        currentGross += price * qty;
+      }
     }
 
     final type = order['merchantDiscountType']?.toString() ?? 'fixed';
@@ -139,9 +141,11 @@ class OrderHelper {
     final fixed =
         double.tryParse(order['merchantDiscountFixed']?.toString() ?? '0') ??
             0.0;
-
     if (type == 'percentage' && perc > 0) {
-      return (currentGross * perc) / 100.0;
+      double discVal =
+          orderDiscount ?? (order['orderDiscount'] as num?)?.toDouble() ?? 0.0;
+      double base = currentGross - discVal;
+      return (base * perc) / 100.0;
     } else {
       return fixed;
     }
@@ -336,8 +340,31 @@ class OrderHelper {
     grossTotal += payoutTotal + cashbackTotal;
 
     double orderDiscount = (order['orderDiscount'] as num?)?.toDouble() ?? 0.0;
-    double merchantDiscount = getCurrentMerchantDiscount(order);
+    double merchantDiscount = getCurrentMerchantDiscount(order,
+        grossTotal: grossTotal,
+        orderDiscount: orderDiscount,
+        orderTax: orderTax);
     print("🟢 merchant discount: $merchantDiscount");
+
+    final String mdType = order['merchantDiscountType']?.toString() ?? 'fixed';
+    final double mdPerc = double.tryParse(
+            order['merchantDiscountPercentage']?.toString() ?? '0') ??
+        0.0;
+
+    double calculatedPerc = 0.0;
+    if (mdType == 'percentage' && mdPerc > 0) {
+      calculatedPerc = mdPerc;
+    } else if (mdType == 'fixed' && merchantDiscount.abs() > 0) {
+      double base = grossTotal - orderDiscount;
+      if (base > 0) {
+        calculatedPerc = (merchantDiscount.abs() / base) * 100.0;
+      }
+    }
+
+    if (calculatedPerc > 0) {
+      orderTax = orderTax * (1 - calculatedPerc / 100.0);
+      orderTax = roundTaxHalfUp(orderTax);
+    }
 
     double netTotal = grossTotal - orderDiscount - merchantDiscount;
     double netPayable = netTotal + orderTax + cbFee;
@@ -613,16 +640,24 @@ class OrderHelper {
 
       // ✅ Set active order ID if not found or invalid
       if (currentActiveOrderId == null ||
+          currentActiveOrderId <= 0 ||
           !localOrderIds.contains(currentActiveOrderId)) {
-        // Build #1.0.315: Last attempt restore from checkpoint before jumping to newest
-        currentActiveOrderId = prefs.getInt('lastActiveOrderId');
-        if (currentActiveOrderId != null &&
-            !localOrderIds.contains(currentActiveOrderId)) {
-          currentActiveOrderId = null;
+        // Build #1.0.316: Prioritize lastActiveOrderId for focus persistence across screens
+        final checkpointId = prefs.getInt('lastActiveOrderId');
+        if (checkpointId != null &&
+            checkpointId > 0 &&
+            localOrderIds.contains(checkpointId)) {
+          if (kDebugMode)
+            print(
+                "🔄 loadData: Restoring focus from lastActiveOrderId: $checkpointId");
+          currentActiveOrderId = checkpointId;
+        } else if (localOrderIds.isNotEmpty) {
+          // Final fallback to newest order ONLY if no valid checkpoint exists
+          currentActiveOrderId = localOrderIds.last;
+          if (kDebugMode)
+            print(
+                "🔄 loadData: Fallback to newest order: $currentActiveOrderId");
         }
-
-        currentActiveOrderId ??=
-            localOrderIds.isNotEmpty ? localOrderIds.last : null;
 
         if (currentActiveOrderId != null) {
           await prefs.setInt('activeOrderId', currentActiveOrderId);
@@ -2093,9 +2128,12 @@ class OrderHelper {
   Future<void> saveLastActiveOrderId(int orderId) async {
     activeOrderId = orderId;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('lastActiveOrderId', activeOrderId!);
+    await prefs.setInt('lastActiveOrderId', orderId);
+    // Build #1.0.316: Also sync with activeOrderId to ensure consistency during transitions
+    await prefs.setInt('activeOrderId', orderId);
     if (kDebugMode) {
-      print("##### Saved last active order ID: $activeOrderId");
+      print(
+          "##### Saved last active order ID: $orderId (synced with activeOrderId)");
     }
   }
 
@@ -2820,8 +2858,7 @@ class OrderHelper {
 
       final double subtotal =
           (updatedOrder['gross_total'] as num?)?.toDouble() ?? 0.0;
-      final double tax =
-          (updatedOrder['order_tax'] as num?)?.toDouble() ?? 0.0;
+      final double tax = (updatedOrder['order_tax'] as num?)?.toDouble() ?? 0.0;
       final double total =
           (updatedOrder['net_payable'] as num?)?.toDouble() ?? 0.0;
 
@@ -2831,7 +2868,7 @@ class OrderHelper {
 
       try {
         await const MethodChannel(
-          'com.example.flutter_customer_display/sunmi_display',
+          'com.alekta.pinakapos/sunmi_display',
         ).invokeMethod(
           'showCustomerData',
           {
@@ -2840,19 +2877,18 @@ class OrderHelper {
             'grossTotal': subtotal,
             'discount': (updatedOrder['discount'] as num?)?.toDouble() ?? 0.0,
             'merchantDiscount':
-            (updatedOrder['merchant_discount'] as num?)?.toDouble() ?? 0.0,
+                (updatedOrder['merchant_discount'] as num?)?.toDouble() ?? 0.0,
             'netTotal':
-            (updatedOrder['net_total'] as num?)?.toDouble() ?? subtotal,
+                (updatedOrder['net_total'] as num?)?.toDouble() ?? subtotal,
             'tax': tax,
             'netPayable': total,
             'orderDate': updatedOrder['order_date']?.toString() ?? '',
             'orderTime': updatedOrder['order_time']?.toString() ?? '',
             'cashbackFee':
-            (updatedOrder['cashback_fee'] as num?)?.toDouble() ?? 0.0,
-            'loyaltyContact':
-            updatedOrder['loyalty_contact']?.toString() ?? '',
+                (updatedOrder['cashback_fee'] as num?)?.toDouble() ?? 0.0,
+            'loyaltyContact': updatedOrder['loyalty_contact']?.toString() ?? '',
             'availablePoints':
-            (updatedOrder['available_points'] as num?)?.toInt() ?? 0,
+                (updatedOrder['available_points'] as num?)?.toInt() ?? 0,
             'summaryEnabled': false,
           },
         );
@@ -3214,4 +3250,87 @@ class OrderHelper {
 //     // Provider.of<YourProvider>(context, listen: false).refreshItems();
 //   }
 // }
+
+// Add this method in OrderHelper class
+  static Map<String, dynamic> buildLineItemForApi(Map<String, dynamic> item) {
+    final String itemType = (item[AppDBConst.itemType] ?? item['type'] ?? '')
+        .toString()
+        .toLowerCase();
+
+    if (itemType.contains('custom')) {
+      final int productId = int.tryParse(item['product_id']?.toString() ??
+              item[AppDBConst.itemProductId]?.toString() ??
+              '0') ??
+          60303;
+
+      final String taxStatus =
+          (item['tax_status']?.toString() ?? 'none').toLowerCase();
+
+      final String name =
+          item[AppDBConst.itemName] ?? item['name'] ?? "Custom Item";
+      final int quantity = item['quantity'] ?? item[AppDBConst.itemCount] ?? 1;
+      final double sumPrice =
+          (item[AppDBConst.itemSumPrice] ?? item['price'] ?? 0.0).toDouble();
+
+      final Map<String, dynamic> line = {
+        "product_id": productId,
+        "name": name,
+        "quantity": quantity,
+        "subtotal": sumPrice.toStringAsFixed(2),
+        "total": sumPrice.toStringAsFixed(2),
+        "tax_status": taxStatus,
+        "type": "custom",
+      };
+
+      final String sku = item['sku']?.toString() ?? '';
+      if (sku.isNotEmpty) {
+        line["sku"] = sku;
+      }
+
+      return line;
+    }
+
+    // Normal product (unchanged)
+    return {
+      "product_id": item['product_id'] ?? item[AppDBConst.itemProductId],
+      "quantity": item['quantity'] ?? item[AppDBConst.itemCount] ?? 1,
+      "total": (item[AppDBConst.itemSumPrice] ?? item['price'] ?? 0.0)
+          .toStringAsFixed(2),
+      "subtotal": (item[AppDBConst.itemSumPrice] ?? item['price'] ?? 0.0)
+          .toStringAsFixed(2),
+      "name": item[AppDBConst.itemName] ?? item['name'],
+      "meta_data": item['meta_data'] ?? [],
+    };
+  }
+
+  Future<void> deleteOrderWithItems(int orderId) async {
+    final db = await DBHelper.instance.database;
+
+    // 1. Delete order items (purchased_items_table)
+    await db.delete(
+      AppDBConst.purchasedItemsTable,
+      where: '${AppDBConst.orderIdForeignKey} = ?',
+      whereArgs: [orderId],
+    );
+
+    // 2. Delete the order itself
+    await db.delete(
+      AppDBConst.orderTable,
+      where: '${AppDBConst.orderServerId} = ?',
+      whereArgs: [orderId],
+    );
+
+    // 3. Also clean up Isar payments and Hive offline data
+    // await LocalPaymentDBHelper.instance.deletePaymentsByOrderId(orderId);
+    final box = StorageProvider.offlineOrders;
+    await box.delete(orderId.toString());
+
+    // 4. Refresh in-memory lists
+    await loadData();
+    notifyOrderPanelToRefresh();
+
+    print("✅ Order $orderId and all items deleted.");
+  }
 }
+
+//this is original grocery_v2 code

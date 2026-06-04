@@ -6,8 +6,18 @@ allprojects {
     }
 }
 
-subprojects {
-    if (it.name != 'app') {
+subprojects { subproject ->
+    if (subproject.name != 'app') {
+        subproject.afterEvaluate { project ->
+            if (project.hasProperty('android')) {
+                project.android {
+                    if (namespace == null) {
+                        namespace project.group
+                    }
+                    compileSdkVersion 35
+                }
+            }
+        }
         evaluationDependsOn(':app')
     }
 }
