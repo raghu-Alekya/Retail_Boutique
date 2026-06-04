@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pinaka_pos/Screens/Home/total_orders_screen.dart';
 import 'package:pinaka_pos/Widgets/widget_topbar.dart';
 // Fix import path to match your project (e.g. widget_navigation_bar.dart):
 import 'package:pinaka_pos/Widgets/widget_navigation_bar.dart';
@@ -16,7 +17,9 @@ import '../../Database/user_db_helper.dart';
 import '../../Helper/Extentions/theme_notifier.dart';
 import '../../Models/Orders/refund_orderlist_model.dart';
 import '../../Preferences/pinaka_preferences.dart';
+import '../../Repositories/Orders/Full_order_RefundOrderRepository.dart';
 import '../../Repositories/Orders/Refund_orderlist_repository.dart' show CompletedOrdersRepository;
+import '../../Repositories/Orders/partial_order_reund_repository.dart';
 import '../../Widgets/cash_refund.dart';
 import '../../Widgets/verify_item_status.dart';
 import '../../Widgets/widget_navigation_bar.dart' as custom_widgets;
@@ -1372,11 +1375,110 @@ class _RefundScreenState extends State<RefundScreen> {
                                         );
                                       } else {
                                         // ✅ Items & reason selected → show dialog
-                                        await showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (_) => VerifyItemStatusDialog(order: selectedOrder,  selectedItems: selectedItems,),
-                                        );
+                                        // await showDialog(
+                                        //   context: context,
+                                        //   barrierDismissible: false,
+                                        //   builder: (_) => VerifyItemStatusDialog(
+                                        //     order: selectedOrder,
+                                        //     selectedItems: selectedItems,
+                                        //   ),
+                                        // );
+                                        try {
+
+                                          final fullRepo = RefundOrderRepository(
+                                            baseUrl: "https://merchantretail.alektasolutions.com",
+                                          );
+
+                                          final partialRepo = PartialRefundRepository(
+                                            baseUrl: "https://merchantretail.alektasolutions.com",
+                                          );
+
+                                          final isFullRefund =
+                                              selectedItems.length == selectedOrder.items.length;
+
+                                          // Default values
+                                          final itemsReusableValue = "yes";
+                                          final reason = selectedReason ?? "refund";
+
+                                          bool success = false;
+
+                                          if (isFullRefund) {
+
+                                            success = await fullRepo.fullOrderRefund(
+                                              orderId: selectedOrder.orderId,
+                                              amount: selectedOrder.total.toDouble(),
+                                              reason: reason,
+                                              itemsReusable: itemsReusableValue,
+                                            );
+
+                                          } else {
+
+                                            final itemsToRefund =
+                                            selectedItems.map((item) {
+
+                                              final rawAmount =
+                                                  item['amount']?.toString() ?? "0";
+
+                                              final amount = double.tryParse(
+                                                rawAmount.replaceAll(
+                                                  RegExp(r'[^0-9.]'),
+                                                  '',
+                                                ),
+                                              ) ?? 0.0;
+
+                                              return {
+                                                "order_item_id": item['order_item_id'],
+                                                "qty": item['qty'],
+                                                "refundable_amount": amount,
+                                              };
+
+                                            }).toList();
+
+                                            success = await partialRepo.partialOrderRefund(
+                                              orderId: selectedOrder.orderId,
+                                              reason: reason,
+                                              itemsReusable: itemsReusableValue,
+                                              items: itemsToRefund,
+                                            );
+                                          }
+
+                                          if (!mounted) return;
+
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                success
+                                                    ? "Refund Successful"
+                                                    : "Refund Failed",
+                                              ),
+                                              backgroundColor:
+                                              success ? Colors.green : Colors.red,
+                                            ),
+                                          );
+
+                                          if (success) {
+
+                                            Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                const TotalOrdersScreen(),
+                                              ),
+                                                  (route) => false,
+                                            );
+
+                                          }
+
+                                        } catch (e) {
+
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text("Error: $e"),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+
+                                        }
                                       }
                                     },
                                     child: Container(

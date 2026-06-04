@@ -5513,95 +5513,96 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                                     _handlePay();
                                   },
                                 ),
-                                _buildPaymentModeButton(
-                                  TextConstants.ebtText,
-                                  Image.asset(
-                                    'assets/ebt.png',
-                                    width: ResponsiveLayout.getIconSize(24),
-                                    height: ResponsiveLayout.getIconSize(24),
-                                    fit: BoxFit.contain,
-                                  ),
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF84A2CB),
-                                      Color(0xFF84A2CB)
-                                    ],
-                                  ),
-                                  borderColor: const Color(0xFF84A2CB),
-                                  iconColor: Colors.white,
-                                  isLoading: _processingPaymentMethod ==
-                                      TextConstants.ebtText &&
-                                      isLoading,
-                                  isDisabled:
-                                  _processingPaymentMethod != null &&
-                                      _processingPaymentMethod !=
-                                          TextConstants.ebtText,
-                                  onTap: () {
-                                    // 1️⃣ Check if there is any EBT left
-                                    if (ebtTotal <= 0) {
-                                      setState(() => _amountErrorText =
-                                      "No EBT balance available");
-                                      return;
-                                    }
-
-                                    // 2️⃣ Determine the maximum allowed amount
-                                    final allowedAmount =
-                                    balanceAmount.clamp(0.0, ebtTotal);
-
-                                    if (allowedAmount <= 0) {
-                                      setState(() => _amountErrorText =
-                                      "Cannot pay with EBT, balance is zero");
-                                      return;
-                                    }
-
-                                    // 3️⃣ Respect user-entered partial amount when present.
-                                    final enteredAmount = double.tryParse(
-                                      amountController.text
-                                          .replaceAll(
-                                          TextConstants.currencySymbol, '')
-                                          .trim(),
-                                    ) ??
-                                        0.0;
-
-                                    final amountToUse = enteredAmount > 0
-                                        ? enteredAmount.clamp(0.0, allowedAmount)
-                                        : allowedAmount;
-
-                                    if (amountToUse <= 0) {
-                                      setState(() => _amountErrorText =
-                                          TextConstants.amountValidation);
-                                      return;
-                                    }
-
-                                    // 4️⃣ Select EBT only (manual amount entry by user)
-                                    _selectPaymentMethod(
-                                      TextConstants.ebtText,
-                                    );
-
-                                    // If user already entered amount, submit like Cash flow.
-                                    if (enteredAmount > 0) {
-                                      final normalizedAmount = amountToUse;
-                                      setState(() {
-                                        _rawAmount = (normalizedAmount * 100).round();
-                                        amountController.text =
-                                        '${TextConstants.currencySymbol}${normalizedAmount.toStringAsFixed(2)}';
-                                        _isAmountEntered = true;
-                                        _amountErrorText = null;
-                                      });
-                                      _handlePay();
-                                      return;
-                                    }
-
-                                    // Otherwise keep EBT amount user-driven.
-                                    setState(() {
-                                      _rawAmount = 0;
-                                      amountController.text =
-                                      '${TextConstants.currencySymbol}0.00';
-                                      _isAmountEntered = false;
-                                      _amountErrorText = null;
-                                    });
-                                  },
-                                ),
+                                //  Commented the code as part of boutique flow
+                                // _buildPaymentModeButton(
+                                //   TextConstants.ebtText,
+                                //   Image.asset(
+                                //     'assets/ebt.png',
+                                //     width: ResponsiveLayout.getIconSize(24),
+                                //     height: ResponsiveLayout.getIconSize(24),
+                                //     fit: BoxFit.contain,
+                                //   ),
+                                //   gradient: const LinearGradient(
+                                //     colors: [
+                                //       Color(0xFF84A2CB),
+                                //       Color(0xFF84A2CB)
+                                //     ],
+                                //   ),
+                                //   borderColor: const Color(0xFF84A2CB),
+                                //   iconColor: Colors.white,
+                                //   isLoading: _processingPaymentMethod ==
+                                //       TextConstants.ebtText &&
+                                //       isLoading,
+                                //   isDisabled:
+                                //   _processingPaymentMethod != null &&
+                                //       _processingPaymentMethod !=
+                                //           TextConstants.ebtText,
+                                //   onTap: () {
+                                //     // 1️⃣ Check if there is any EBT left
+                                //     if (ebtTotal <= 0) {
+                                //       setState(() => _amountErrorText =
+                                //       "No EBT balance available");
+                                //       return;
+                                //     }
+                                //
+                                //     // 2️⃣ Determine the maximum allowed amount
+                                //     final allowedAmount =
+                                //     balanceAmount.clamp(0.0, ebtTotal);
+                                //
+                                //     if (allowedAmount <= 0) {
+                                //       setState(() => _amountErrorText =
+                                //       "Cannot pay with EBT, balance is zero");
+                                //       return;
+                                //     }
+                                //
+                                //     // 3️⃣ Respect user-entered partial amount when present.
+                                //     final enteredAmount = double.tryParse(
+                                //       amountController.text
+                                //           .replaceAll(
+                                //           TextConstants.currencySymbol, '')
+                                //           .trim(),
+                                //     ) ??
+                                //         0.0;
+                                //
+                                //     final amountToUse = enteredAmount > 0
+                                //         ? enteredAmount.clamp(0.0, allowedAmount)
+                                //         : allowedAmount;
+                                //
+                                //     if (amountToUse <= 0) {
+                                //       setState(() => _amountErrorText =
+                                //           TextConstants.amountValidation);
+                                //       return;
+                                //     }
+                                //
+                                //     // 4️⃣ Select EBT only (manual amount entry by user)
+                                //     _selectPaymentMethod(
+                                //       TextConstants.ebtText,
+                                //     );
+                                //
+                                //     // If user already entered amount, submit like Cash flow.
+                                //     if (enteredAmount > 0) {
+                                //       final normalizedAmount = amountToUse;
+                                //       setState(() {
+                                //         _rawAmount = (normalizedAmount * 100).round();
+                                //         amountController.text =
+                                //         '${TextConstants.currencySymbol}${normalizedAmount.toStringAsFixed(2)}';
+                                //         _isAmountEntered = true;
+                                //         _amountErrorText = null;
+                                //       });
+                                //       _handlePay();
+                                //       return;
+                                //     }
+                                //
+                                //     // Otherwise keep EBT amount user-driven.
+                                //     setState(() {
+                                //       _rawAmount = 0;
+                                //       amountController.text =
+                                //       '${TextConstants.currencySymbol}0.00';
+                                //       _isAmountEntered = false;
+                                //       _amountErrorText = null;
+                                //     });
+                                //   },
+                                // ),
                               ],
                             ),
                           ),
@@ -6089,6 +6090,7 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                           ),
                         ),
                         const SizedBox(width: 10),
+                        //  Updated the field to support only mobile number entry as part of boutique app changes.
                         Expanded(
                           child: Container(
                             height: 40,
@@ -6113,8 +6115,10 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                                 return TextField(
                                   controller: mobileController,
                                   enabled: !isCustomerFieldDisabled,
-                                  keyboardType: TextInputType.emailAddress,
+                                  keyboardType: TextInputType.number,
                                   inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(10),
                                     TextInputFormatter.withFunction(
                                             (oldValue, newValue) {
                                           final text = newValue.text;
@@ -6145,7 +6149,7 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                                     });
                                   },
                                   decoration: const InputDecoration(
-                                    hintText: 'Add Mobile No or Email',
+                                    hintText: 'Add Mobile Number ',
                                     border: InputBorder.none,
                                     isCollapsed: true,
                                     counterText: '',
@@ -6987,10 +6991,11 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                             _buildOrderCalculation(
                                 TextConstants.payByCash,
                                 '${TextConstants.currencySymbol}${payByCash.toStringAsFixed(2)}'),
-                            _buildOrderCalculation(
-                              "Pay by EBT",
-                              '${TextConstants.currencySymbol}${payByEbt.toStringAsFixed(2)}',
-                            ),
+                            //  Commented because pay by ebt as a part of boutique flow
+                            // _buildOrderCalculation(
+                            //   "Pay by EBT",
+                            //   '${TextConstants.currencySymbol}${payByEbt.toStringAsFixed(2)}',
+                            // ),
 
                             _buildOrderCalculation(
                                 TextConstants.payByOther,
@@ -8728,6 +8733,7 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                                 children: [
                                   // Net Payable
                                   Container(
+                                    height: ResponsiveLayout.getHeight(90),
                                     padding: const EdgeInsets.only(
                                       top: 6,
                                       right: 6,
@@ -8790,6 +8796,7 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                                             height:
                                             ResponsiveLayout.getHeight(10)),
                                         Container(
+                                          height: ResponsiveLayout.getHeight(90),
                                           padding: const EdgeInsets.only(
                                             top: 6,
                                             right: 6,
@@ -8847,6 +8854,7 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
 // Otherwise show the main balance
                                   else
                                     Container(
+                                      height: ResponsiveLayout.getHeight(90),
                                       padding: const EdgeInsets.only(
                                         top: 6,
                                         right: 6,
@@ -8899,61 +8907,10 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                                   SizedBox(
                                       height: ResponsiveLayout.getHeight(15)),
 
-// EBT Amount
-                                  Container(
-                                    padding: const EdgeInsets.only(
-                                      top: 6,
-                                      right: 6,
-                                      bottom: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: themeHelper.themeMode ==
-                                          ThemeMode.dark
-                                          ? const Color(0xFF091B34)
-                                          : const Color(0xFFF4F7FC),
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border(
-                                        top: BorderSide(
-                                          color: themeHelper.themeMode ==
-                                              ThemeMode.dark
-                                              ? const Color(0xFF091B34)
-                                              : const Color(0xFF3B7DDD),
-                                          width: 1,
-                                        ),
-                                        right: BorderSide(
-                                          color: themeHelper.themeMode ==
-                                              ThemeMode.dark
-                                              ? const Color(0xFF091B34)
-                                              : const Color(0xFF3B7DDD),
-                                          width: 1,
-                                        ),
-                                        bottom: BorderSide(
-                                          color: themeHelper.themeMode ==
-                                              ThemeMode.dark
-                                              ? const Color(0xFF091B34)
-                                              : const Color(0xFF3B7DDD),
-                                          width: 1,
-                                        ),
-                                        left: BorderSide.none,
-                                      ),
-                                    ),
-                                    child: _buildAmountDisplay(
-                                      TextConstants.EBTAmount,
-                                      ebtTotal < 0
-                                          ? '-${TextConstants.currencySymbol}${ebtTotal.abs().toStringAsFixed(2)}'
-                                          : '${TextConstants.currencySymbol}${ebtTotal.toStringAsFixed(2)}',
-                                      leftBarColor: const Color(0xFF3B7DDD),
-                                      amountColor: themeHelper.themeMode ==
-                                          ThemeMode.dark
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
-                                  ),
-
                                   SizedBox(
                                       height: ResponsiveLayout.getHeight(15)),
 
-                                  // // EBT Amount
+                                  // // EBT Amount Commented because ebt amount as a part of boutique flow
                                   // Container(
                                   //   padding: const EdgeInsets.only(
                                   //     top: 6,
@@ -10826,7 +10783,7 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
             child: Opacity(
               opacity: isEnabled ? 1.0 : 0.5,
               child: Container(
-                width: ResponsiveLayout.getWidth(178),
+                width: ResponsiveLayout.getWidth(240),
                 height: ResponsiveLayout.getHeight(54),
                 margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                 decoration: BoxDecoration(

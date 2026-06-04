@@ -52,7 +52,7 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen>
     with WidgetsBindingObserver, LayoutSelectionMixin {
   final List<String> items = List.generate(18, (index) => 'Bud Light');
-  int _selectedSidebarIndex = 1;
+  int _selectedSidebarIndex = 0;
   List<int> quantities = [1, 1, 1, 1];
 
   bool isLoading = true;
@@ -249,8 +249,8 @@ class _CategoriesScreenState extends State<CategoriesScreen>
     "promotions",
     "uncategorized",
     "default",
+    "custom product",
   };
-
   List<CategoryModel> get visibleCategories {
     return categories.where((c) {
       final name = c.name.toLowerCase().trim();
@@ -396,6 +396,9 @@ class _CategoriesScreenState extends State<CategoriesScreen>
 
       if (response.status == Status.COMPLETED && response.data != null) {
         categories = response.data!.categories;
+        for (var category in categories) {
+          print("Category: ${category.name}");
+        }
 
         setState(() {
           isLoading = false;

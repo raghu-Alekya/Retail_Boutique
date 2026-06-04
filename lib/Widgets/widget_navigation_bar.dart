@@ -123,11 +123,44 @@ class _NavigationBarState extends State<NavigationBar> {
               "#### _buildVerticalLayout constraints: $constraints, isShiftInvalid: $isShiftInvalid");
         }
         List<Widget> dynamicItems = [
+          // SidebarButton(
+          //   svgAsset: widget.selectedSidebarIndex == 0
+          //       ? SvgUtils.fastKeySelectedIcon
+          //       : SvgUtils.fastKeyIcon,
+          //   label: TextConstants.fastKeyText,
+          //   isSelected: widget.selectedSidebarIndex == 0,
+          //   onTap: isShiftInvalid ||
+          //           isShiftScreen ||
+          //           widget.selectedSidebarIndex == 0
+          //       ? () {}
+          //       : () async {
+          //           if (!await _canNavigate(0)) return;
+          //           lastSelectedIndex = 0;
+          //           widget.onSidebarItemSelected(0);
+          //           if (widget.callbackOnlyIndices?.contains(0) == true) return;
+          //
+          //           OrderHelper.isOrderPanelLoaded = false;
+          //           OrderHelper.notifyOrderPanelToRefresh();
+          //           final oh = OrderHelper();
+          //           if (oh.activeOrderId != null) {
+          //             await oh.saveLastActiveOrderId(oh.activeOrderId!);
+          //           }
+          //
+          //           Navigator.of(context).pushAndRemoveUntil(
+          //             PageRouteBuilder(
+          //               pageBuilder: (context, animation, secondaryAnimation) =>
+          //                   POSHomeScreen(lastSelectedIndex: 0),
+          //             ),
+          //             (route) => false,
+          //           );
+          //         },
+          //   isVertical: widget.isVertical,
+          //   isDisabled: isShiftInvalid || isShiftScreen,
+          // ),
+          // const SizedBox(height: 10),
           SidebarButton(
-            svgAsset: widget.selectedSidebarIndex == 0
-                ? SvgUtils.fastKeySelectedIcon
-                : SvgUtils.fastKeyIcon,
-            label: TextConstants.fastKeyText,
+            svgAsset: SvgUtils.categoriesIcon,
+            label: TextConstants.categoriesText,
             isSelected: widget.selectedSidebarIndex == 0,
             onTap: isShiftInvalid ||
                     isShiftScreen ||
@@ -135,6 +168,9 @@ class _NavigationBarState extends State<NavigationBar> {
                 ? () {}
                 : () async {
                     if (!await _canNavigate(0)) return;
+                    if (kDebugMode) {
+                      print("##### Categories button tapped");
+                    }
                     lastSelectedIndex = 0;
                     widget.onSidebarItemSelected(0);
                     if (widget.callbackOnlyIndices?.contains(0) == true) return;
@@ -150,6 +186,11 @@ class _NavigationBarState extends State<NavigationBar> {
                       PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) =>
                             POSHomeScreen(lastSelectedIndex: 0),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          return child;
+                        },
+                        transitionDuration: Duration.zero,
                       ),
                       (route) => false,
                     );
@@ -159,8 +200,8 @@ class _NavigationBarState extends State<NavigationBar> {
           ),
           const SizedBox(height: 10),
           SidebarButton(
-            svgAsset: SvgUtils.categoriesIcon,
-            label: TextConstants.categoriesText,
+            svgAsset: SvgUtils.addIcon,
+            label: TextConstants.addText,
             isSelected: widget.selectedSidebarIndex == 1,
             onTap: isShiftInvalid ||
                     isShiftScreen ||
@@ -169,17 +210,16 @@ class _NavigationBarState extends State<NavigationBar> {
                 : () async {
                     if (!await _canNavigate(1)) return;
                     if (kDebugMode) {
-                      print("##### Categories button tapped");
+                      print("##### AddScreen button tapped");
                     }
                     lastSelectedIndex = 1;
                     widget.onSidebarItemSelected(1);
                     if (widget.callbackOnlyIndices?.contains(1) == true) return;
-
                     OrderHelper.isOrderPanelLoaded = false;
                     OrderHelper.notifyOrderPanelToRefresh();
-                    final oh = OrderHelper();
-                    if (oh.activeOrderId != null) {
-                      await oh.saveLastActiveOrderId(oh.activeOrderId!);
+                    final ohV2 = OrderHelper();
+                    if (ohV2.activeOrderId != null) {
+                      await ohV2.saveLastActiveOrderId(ohV2.activeOrderId!);
                     }
 
                     Navigator.of(context).pushAndRemoveUntil(
@@ -200,8 +240,8 @@ class _NavigationBarState extends State<NavigationBar> {
           ),
           const SizedBox(height: 10),
           SidebarButton(
-            svgAsset: SvgUtils.addIcon,
-            label: TextConstants.addText,
+            svgAsset: SvgUtils.ordersIcon,
+            label: TextConstants.ordersText,
             isSelected: widget.selectedSidebarIndex == 2,
             onTap: isShiftInvalid ||
                     isShiftScreen ||
@@ -210,50 +250,10 @@ class _NavigationBarState extends State<NavigationBar> {
                 : () async {
                     if (!await _canNavigate(2)) return;
                     if (kDebugMode) {
-                      print("##### AddScreen button tapped");
+                      print("##### OrdersScreen button tapped");
                     }
                     lastSelectedIndex = 2;
                     widget.onSidebarItemSelected(2);
-                    if (widget.callbackOnlyIndices?.contains(2) == true) return;
-                    OrderHelper.isOrderPanelLoaded = false;
-                    OrderHelper.notifyOrderPanelToRefresh();
-                    final ohV2 = OrderHelper();
-                    if (ohV2.activeOrderId != null) {
-                      await ohV2.saveLastActiveOrderId(ohV2.activeOrderId!);
-                    }
-
-                    Navigator.of(context).pushAndRemoveUntil(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            POSHomeScreen(lastSelectedIndex: 2),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          return child;
-                        },
-                        transitionDuration: Duration.zero,
-                      ),
-                      (route) => false,
-                    );
-                  },
-            isVertical: widget.isVertical,
-            isDisabled: isShiftInvalid || isShiftScreen,
-          ),
-          const SizedBox(height: 10),
-          SidebarButton(
-            svgAsset: SvgUtils.ordersIcon,
-            label: TextConstants.ordersText,
-            isSelected: widget.selectedSidebarIndex == 3,
-            onTap: isShiftInvalid ||
-                    isShiftScreen ||
-                    widget.selectedSidebarIndex == 3
-                ? () {}
-                : () async {
-                    if (!await _canNavigate(3)) return;
-                    if (kDebugMode) {
-                      print("##### OrdersScreen button tapped");
-                    }
-                    lastSelectedIndex = 3;
-                    widget.onSidebarItemSelected(3);
 
                     OrderHelper.isOrderPanelLoaded = false;
                     OrderHelper.notifyOrderPanelToRefresh();
@@ -283,16 +283,16 @@ class _NavigationBarState extends State<NavigationBar> {
           SidebarButton(
             svgAsset: SvgUtils.appsIcon,
             label: TextConstants.appsText,
-            isSelected: widget.selectedSidebarIndex == 4,
-            onTap: widget.selectedSidebarIndex == 4
+            isSelected: widget.selectedSidebarIndex == 3,
+            onTap: widget.selectedSidebarIndex == 3
                 ? () {}
                 : () async {
-                    if (!await _canNavigate(4)) return;
+                    if (!await _canNavigate(3)) return;
                     if (kDebugMode) {
                       print("##### AppsScreen button tapped");
                     }
-                    lastSelectedIndex = 4;
-                    widget.onSidebarItemSelected(4);
+                    lastSelectedIndex = 3;
+                    widget.onSidebarItemSelected(3);
                     final oh = OrderHelper();
                     if (oh.activeOrderId != null) {
                       await oh.saveLastActiveOrderId(oh.activeOrderId!);
@@ -318,20 +318,20 @@ class _NavigationBarState extends State<NavigationBar> {
           SidebarButton(
             imageAsset: 'assets/refund.png',
             label: "Refund",
-            isSelected: widget.selectedSidebarIndex == 5,
+            isSelected: widget.selectedSidebarIndex == 4,
             isDisabled: isShiftInvalid || isShiftScreen,
             onTap: (isShiftInvalid ||
                     isShiftScreen ||
-                    widget.selectedSidebarIndex == 5)
+                    widget.selectedSidebarIndex == 4)
                 ? () {}
                 : () async {
-                    if (!await _canNavigate(5)) return;
+                    if (!await _canNavigate(4)) return;
                     if (kDebugMode) {
                       print("##### Refund button tapped");
                     }
 
-                    lastSelectedIndex = 5;
-                    widget.onSidebarItemSelected(5);
+                    lastSelectedIndex = 4;
+                    widget.onSidebarItemSelected(4);
                     final oh = OrderHelper();
                     if (oh.activeOrderId != null) {
                       await oh.saveLastActiveOrderId(oh.activeOrderId!);
@@ -350,7 +350,7 @@ class _NavigationBarState extends State<NavigationBar> {
                               ),
                             ),
                           child: const CompletedOrdersScreen(
-                            lastSelectedIndex: 5,
+                            lastSelectedIndex: 4,
                           ),
                         ),
                       ),
@@ -366,19 +366,19 @@ class _NavigationBarState extends State<NavigationBar> {
             SidebarButton(
               svgAsset: SvgUtils.settingsIcon,
               label: TextConstants.settingsHeaderText,
-              isSelected: widget.selectedSidebarIndex == 6,
+              isSelected: widget.selectedSidebarIndex == 5,
               onTap: isShiftInvalid ||
                       isShiftScreen ||
-                      widget.selectedSidebarIndex == 6
+                      widget.selectedSidebarIndex == 5
                   ? () {}
                   : () async {
-                      if (!await _canNavigate(6)) return;
+                      if (!await _canNavigate(5)) return;
                       if (kDebugMode) {
                         print("##### Settings button tapped");
                       }
                       lastSelectedIndex = widget.selectedSidebarIndex;
 
-                      widget.onSidebarItemSelected(6);
+                      widget.onSidebarItemSelected(5);
 
                       Navigator.push(
                         context,
@@ -403,13 +403,13 @@ class _NavigationBarState extends State<NavigationBar> {
             SidebarButton(
               svgAsset: SvgUtils.logoutIcon,
               label: TextConstants.logoutText,
-              isSelected: widget.selectedSidebarIndex == 7,
+              isSelected: widget.selectedSidebarIndex == 6,
               onTap: isShiftInvalid || isShiftScreen
                   ? () {}
                   : () async {
-                      if (!await _canNavigate(7)) return;
+                      if (!await _canNavigate(6)) return;
                       final previousIndex = widget.selectedSidebarIndex;
-                      widget.onSidebarItemSelected(7);
+                      widget.onSidebarItemSelected(6);
                       if (kDebugMode) {
                         print("nav logout called");
                       }
@@ -459,11 +459,48 @@ class _NavigationBarState extends State<NavigationBar> {
         }
 
         List<Widget> dynamicItems = [
+          // SidebarButton(
+          //   svgAsset: widget.selectedSidebarIndex == 0
+          //       ? SvgUtils.fastKeySelectedIcon
+          //       : SvgUtils.fastKeyIcon,
+          //   label: TextConstants.fastKeyText,
+          //   isSelected: widget.selectedSidebarIndex == 0,
+          //   onTap: isShiftInvalid ||
+          //           isShiftScreen ||
+          //           widget.selectedSidebarIndex == 0
+          //       ? () {}
+          //       : () async {
+          //           if (!await _canNavigate(0)) return;
+          //           lastSelectedIndex = 0;
+          //           widget.onSidebarItemSelected(0);
+          //           if (widget.callbackOnlyIndices?.contains(0) == true) return;
+          //
+          //           OrderHelper.isOrderPanelLoaded = false;
+          //           OrderHelper.notifyOrderPanelToRefresh();
+          //           final ohH0 = OrderHelper();
+          //           if (ohH0.activeOrderId != null) {
+          //             await ohH0.saveLastActiveOrderId(ohH0.activeOrderId!);
+          //           }
+          //
+          //           Navigator.of(context).pushAndRemoveUntil(
+          //             PageRouteBuilder(
+          //               pageBuilder: (context, animation, secondaryAnimation) =>
+          //                   POSHomeScreen(lastSelectedIndex: 0),
+          //               transitionsBuilder:
+          //                   (context, animation, secondaryAnimation, child) =>
+          //                       child,
+          //               transitionDuration: Duration.zero,
+          //             ),
+          //             (route) => false,
+          //           );
+          //         },
+          //   isVertical: false,
+          //   isDisabled: isShiftInvalid || isShiftScreen,
+          // ),
+          // const SizedBox(width: 10),
           SidebarButton(
-            svgAsset: widget.selectedSidebarIndex == 0
-                ? SvgUtils.fastKeySelectedIcon
-                : SvgUtils.fastKeyIcon,
-            label: TextConstants.fastKeyText,
+            svgAsset: SvgUtils.categoriesIcon,
+            label: TextConstants.categoriesText,
             isSelected: widget.selectedSidebarIndex == 0,
             onTap: isShiftInvalid ||
                     isShiftScreen ||
@@ -477,9 +514,9 @@ class _NavigationBarState extends State<NavigationBar> {
 
                     OrderHelper.isOrderPanelLoaded = false;
                     OrderHelper.notifyOrderPanelToRefresh();
-                    final ohH0 = OrderHelper();
-                    if (ohH0.activeOrderId != null) {
-                      await ohH0.saveLastActiveOrderId(ohH0.activeOrderId!);
+                    final ohH1 = OrderHelper();
+                    if (ohH1.activeOrderId != null) {
+                      await ohH1.saveLastActiveOrderId(ohH1.activeOrderId!);
                     }
 
                     Navigator.of(context).pushAndRemoveUntil(
@@ -499,8 +536,8 @@ class _NavigationBarState extends State<NavigationBar> {
           ),
           const SizedBox(width: 10),
           SidebarButton(
-            svgAsset: SvgUtils.categoriesIcon,
-            label: TextConstants.categoriesText,
+            svgAsset: SvgUtils.addIcon,
+            label: TextConstants.addText,
             isSelected: widget.selectedSidebarIndex == 1,
             onTap: isShiftInvalid ||
                     isShiftScreen ||
@@ -511,12 +548,11 @@ class _NavigationBarState extends State<NavigationBar> {
                     lastSelectedIndex = 1;
                     widget.onSidebarItemSelected(1);
                     if (widget.callbackOnlyIndices?.contains(1) == true) return;
-
                     OrderHelper.isOrderPanelLoaded = false;
                     OrderHelper.notifyOrderPanelToRefresh();
-                    final ohH1 = OrderHelper();
-                    if (ohH1.activeOrderId != null) {
-                      await ohH1.saveLastActiveOrderId(ohH1.activeOrderId!);
+                    final ohH2 = OrderHelper();
+                    if (ohH2.activeOrderId != null) {
+                      await ohH2.saveLastActiveOrderId(ohH2.activeOrderId!);
                     }
 
                     Navigator.of(context).pushAndRemoveUntil(
@@ -536,8 +572,8 @@ class _NavigationBarState extends State<NavigationBar> {
           ),
           const SizedBox(width: 10),
           SidebarButton(
-            svgAsset: SvgUtils.addIcon,
-            label: TextConstants.addText,
+            svgAsset: SvgUtils.ordersIcon,
+            label: TextConstants.ordersText,
             isSelected: widget.selectedSidebarIndex == 2,
             onTap: isShiftInvalid ||
                     isShiftScreen ||
@@ -547,42 +583,6 @@ class _NavigationBarState extends State<NavigationBar> {
                     if (!await _canNavigate(2)) return;
                     lastSelectedIndex = 2;
                     widget.onSidebarItemSelected(2);
-                    if (widget.callbackOnlyIndices?.contains(2) == true) return;
-                    OrderHelper.isOrderPanelLoaded = false;
-                    OrderHelper.notifyOrderPanelToRefresh();
-                    final ohH2 = OrderHelper();
-                    if (ohH2.activeOrderId != null) {
-                      await ohH2.saveLastActiveOrderId(ohH2.activeOrderId!);
-                    }
-
-                    Navigator.of(context).pushAndRemoveUntil(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            POSHomeScreen(lastSelectedIndex: 2),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) =>
-                                child,
-                        transitionDuration: Duration.zero,
-                      ),
-                      (route) => false,
-                    );
-                  },
-            isVertical: false,
-            isDisabled: isShiftInvalid || isShiftScreen,
-          ),
-          const SizedBox(width: 10),
-          SidebarButton(
-            svgAsset: SvgUtils.ordersIcon,
-            label: TextConstants.ordersText,
-            isSelected: widget.selectedSidebarIndex == 3,
-            onTap: isShiftInvalid ||
-                    isShiftScreen ||
-                    widget.selectedSidebarIndex == 3
-                ? () {}
-                : () async {
-                    if (!await _canNavigate(3)) return;
-                    lastSelectedIndex = 3;
-                    widget.onSidebarItemSelected(3);
 
                     OrderHelper.isOrderPanelLoaded = false;
                     OrderHelper.notifyOrderPanelToRefresh();
@@ -611,13 +611,13 @@ class _NavigationBarState extends State<NavigationBar> {
           SidebarButton(
             svgAsset: SvgUtils.appsIcon,
             label: TextConstants.appsText,
-            isSelected: widget.selectedSidebarIndex == 4,
-            onTap: widget.selectedSidebarIndex == 4
+            isSelected: widget.selectedSidebarIndex == 3,
+            onTap: widget.selectedSidebarIndex == 3
                 ? () {}
                 : () async {
-                    if (!await _canNavigate(4)) return;
-                    lastSelectedIndex = 4;
-                    widget.onSidebarItemSelected(4);
+                    if (!await _canNavigate(3)) return;
+                    lastSelectedIndex = 3;
+                    widget.onSidebarItemSelected(3);
                     final ohH4 = OrderHelper();
                     if (ohH4.activeOrderId != null) {
                       await ohH4.saveLastActiveOrderId(ohH4.activeOrderId!);
@@ -642,16 +642,16 @@ class _NavigationBarState extends State<NavigationBar> {
           SidebarButton(
             imageAsset: 'assets/refund.png',
             label: "Refund",
-            isSelected: widget.selectedSidebarIndex == 5,
+            isSelected: widget.selectedSidebarIndex == 4,
             isDisabled: isShiftInvalid || isShiftScreen,
             onTap: (isShiftInvalid ||
                     isShiftScreen ||
-                    widget.selectedSidebarIndex == 5)
+                    widget.selectedSidebarIndex == 4)
                 ? () {}
                 : () async {
-                    if (!await _canNavigate(5)) return;
-                    lastSelectedIndex = 5;
-                    widget.onSidebarItemSelected(5);
+                    if (!await _canNavigate(4)) return;
+                    lastSelectedIndex = 4;
+                    widget.onSidebarItemSelected(4);
                     final ohH5 = OrderHelper();
                     if (ohH5.activeOrderId != null) {
                       await ohH5.saveLastActiveOrderId(ohH5.activeOrderId!);
@@ -665,7 +665,7 @@ class _NavigationBarState extends State<NavigationBar> {
                             context.read<CompletedOrdersRepository>(),
                           )..add(FetchCompletedOrders(page: 1, perPage: 10)),
                           child:
-                              const CompletedOrdersScreen(lastSelectedIndex: 5),
+                              const CompletedOrdersScreen(lastSelectedIndex: 4),
                         ),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) =>
@@ -684,15 +684,15 @@ class _NavigationBarState extends State<NavigationBar> {
           SidebarButton(
             svgAsset: SvgUtils.settingsIcon,
             label: TextConstants.settingsHeaderText,
-            isSelected: widget.selectedSidebarIndex == 6,
+            isSelected: widget.selectedSidebarIndex == 5,
             onTap: isShiftInvalid ||
                     isShiftScreen ||
-                    widget.selectedSidebarIndex == 6
+                    widget.selectedSidebarIndex == 5
                 ? () {}
                 : () async {
-                    if (!await _canNavigate(6)) return;
+                    if (!await _canNavigate(5)) return;
                     lastSelectedIndex = widget.selectedSidebarIndex;
-                    widget.onSidebarItemSelected(6);
+                    widget.onSidebarItemSelected(5);
 
                     Navigator.push(
                       context,
@@ -715,13 +715,13 @@ class _NavigationBarState extends State<NavigationBar> {
           SidebarButton(
             svgAsset: SvgUtils.logoutIcon,
             label: TextConstants.logoutText,
-            isSelected: widget.selectedSidebarIndex == 7,
+            isSelected: widget.selectedSidebarIndex == 6,
             onTap: isShiftInvalid || isShiftScreen
                 ? () {}
                 : () async {
-                    if (!await _canNavigate(7)) return;
+                    if (!await _canNavigate(6)) return;
                     final previousIndex = widget.selectedSidebarIndex;
-                    widget.onSidebarItemSelected(7);
+                    widget.onSidebarItemSelected(6);
                     _showLogoutDialog(
                         context, logoutBloc, themeHelper, previousIndex);
                   },

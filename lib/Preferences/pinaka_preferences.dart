@@ -142,4 +142,33 @@ class PinakaPreferences {
     }
     return selectedPrinter; //
   }
+  // ==================== PAYOUT ENABLE ====================
+
+  static const String payoutEnabledKey = "payout_enabled";
+
+  static Future<void> setPayoutEnabled(bool value) async {
+    await _prefs.setBool(payoutEnabledKey, value);
+
+    if (kDebugMode) {
+      print("#### PinakaPreferences: payout_enabled saved -> $value");
+    }
+  }
+
+  static Future<bool> getPayoutEnabled() async {
+    return _prefs.getBool(payoutEnabledKey) ?? false;
+  }
+  static Future<void> savePayoutEnabled(bool value) async {
+    await _prefs.setBool('payout_enabled', value);
+  }
+// ===================== 2. PINAKA PREFERENCES =====================
+
+// Add inside PinakaPreferences class
+
+  static Future<void> saveCashbackEnabled(bool value) async {
+    await _prefs.setBool('cashback_enabled', value);
+  }
+
+  static Future<bool> getCashbackEnabled() async {
+    return _prefs.getBool('cashback_enabled') ?? false;
+  }
 }

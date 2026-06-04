@@ -45,7 +45,7 @@ class _ShiftOpenCloseBalanceScreenState extends State<ShiftOpenCloseBalanceScree
 
   bool isLoading = true;
 
-  int _selectedSidebarIndex = 4;
+  int _selectedSidebarIndex = 3;
 
   // Build #1.0.70: Added new variables to store fetched denominations
   List<Denom> _notesDenominations = [];

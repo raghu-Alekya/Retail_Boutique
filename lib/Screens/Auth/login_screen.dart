@@ -17,6 +17,7 @@ import '../../Database/user_db_helper.dart';
 import '../../Helper/api_response.dart';
 import '../../Models/Auth/login_model.dart';
 import '../../Models/Auth/logout_model.dart';
+import '../../Preferences/pinaka_preferences.dart';
 import '../../Repositories/Assets/asset_repository.dart';
 import '../../Repositories/Auth/login_repository.dart';
 import '../../Repositories/Auth/logout_repository.dart';
@@ -269,6 +270,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if (snapshot.data?.data?.token != null) {
                                       WidgetsBinding.instance.addPostFrameCallback((_) async {
                                         final loginResponse = snapshot.data!.data!;
+
+                                        bool isCashbackEnabled =
+                                            loginResponse.cashbackEnable ?? false;
+
+                                        await PinakaPreferences.saveCashbackEnabled(
+                                            isCashbackEnabled);
+                                        bool isPayoutEnabled =
+                                            loginResponse.payoutEnable ?? false;
+
+                                        await PinakaPreferences.savePayoutEnabled(isPayoutEnabled);
                                         final pin = _password.join();
                                         final token = loginResponse.token ?? "";
 

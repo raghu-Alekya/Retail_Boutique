@@ -333,10 +333,12 @@ class AssetDBHelper { //Build #1.0.54: added
     try {
       final db = await database;
       final result = await db.query(AppDBConst.taxTable);
+      debugPrint("========== TAX TABLE ==========");
       if (kDebugMode) print("#### AssetDBHelper: Retrieved ${result.length} taxes: ${result.toString()}}");
       return result.map((map) => Tax.fromJson(map)).toList();
     } catch (e) {
       if (kDebugMode) print("#### AssetDBHelper: Error fetching tax list: $e}");
+      debugPrint("Tax error: $e");
       return [];
     }
   }

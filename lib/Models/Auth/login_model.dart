@@ -15,8 +15,8 @@ class LoginResponse {
   int? shiftId; // Build #1.0.149: Added shift_id from API response
   String? safeEnable;
   String? safeEnableDrop;
-
-
+  bool? payoutEnable;
+  bool? cashbackEnable;
   LoginResponse({
     this.success,
     this.statusCode,
@@ -34,6 +34,8 @@ class LoginResponse {
     this.shiftId, // Build #1.0.149: added
     this.safeEnable,
     this.safeEnableDrop,
+    this.payoutEnable,
+    this.cashbackEnable,
   });
 
   LoginResponse.fromJson(Map<String, dynamic> json) {
@@ -53,6 +55,9 @@ class LoginResponse {
     shiftId = json['data']?['shift_id']; // Build #1.0.149: added
     safeEnable = json['data']?['safe_enable']; // ✅ HERE
     safeEnableDrop = json['data']?['safe_enable_drop']; // ✅ HERE
+    payoutEnable = json['data']?['payout_enable'] == "yes";
+    // Inside fromJson()
+    cashbackEnable = json['data']?['cashback_enable'] == "yes";
   }
 
   Map<String, dynamic> toJson() {
@@ -74,6 +79,9 @@ class LoginResponse {
         'shift_id': shiftId, // Build #1.0.149: added
         'safe_enable':safeEnable,
         'safe_enable_drop': safeEnableDrop, // ✅ added
+        'payout_enable': payoutEnable,
+        // Inside toJson()
+        'cashback_enable': cashbackEnable,
       }
     };
   }

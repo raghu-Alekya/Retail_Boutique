@@ -928,7 +928,7 @@ class OrdersScreen extends StatefulWidget { //Build #1.0.54: updated
 class _OrdersScreenState extends State<OrdersScreen> with LayoutSelectionMixin {
   late OrderBloc _orderBloc;
   List<model.OrderModel> _orders = []; // Use model.OrderModel
-  int _selectedSidebarIndex = 3;
+  int _selectedSidebarIndex = 2;
   DateTime now = DateTime.now();
   List<int> quantities = [1, 1, 1, 1];
   bool isLoading = false; // Build #1.0.104

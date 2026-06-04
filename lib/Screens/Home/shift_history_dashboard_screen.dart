@@ -29,7 +29,7 @@ class ShiftHistoryDashboardScreen extends StatefulWidget {
 
 class _ShiftHistoryDashboardScreenState
     extends State<ShiftHistoryDashboardScreen> with LayoutSelectionMixin {
-  int _selectedSidebarIndex = 4;
+  int _selectedSidebarIndex = 3;
   late ShiftBloc shiftBloc; //Build #1.0.74
   final PinakaPreferences _preferences = PinakaPreferences(); // Added this
   List<Shift> _cachedShifts = []; // Store previously loaded shifts
@@ -38,7 +38,7 @@ class _ShiftHistoryDashboardScreenState
   @override
   void initState() {
     super.initState();
-    _selectedSidebarIndex = widget.lastSelectedIndex ?? 4;
+    _selectedSidebarIndex = widget.lastSelectedIndex ?? 3;
     shiftBloc = ShiftBloc(ShiftRepository());
     //API call
     fetchShiftHistory();

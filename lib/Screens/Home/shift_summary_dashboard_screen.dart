@@ -228,7 +228,7 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,7 +238,7 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
                           children: [
                             SizedBox(height: 2),
                             _buildTimeTrackingSection(shift),
-                            _buildSafeDropSection(shift),
+                            // _buildSafeDropSection(shift),
                           ],
                         ),
                         SizedBox(width: 10),
@@ -246,12 +246,15 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
                           children: [
                             SizedBox(height: 4),
                             _buildFinancialSummaryCards(shift),
-                            SizedBox(height: 10),
-                            _buildVendorPayoutsSection(shift),
+                            // SizedBox(height: 10),
+                            // _buildVendorPayoutsSection(shift),
                           ],
                         )
                       ],
                     ),
+                    SizedBox(height: 10),
+                    _buildVendorPayoutsSection(shift),
+
                   ],
                 ),
               ),
@@ -387,15 +390,25 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
     final themeHelper = Provider.of<ThemeNotifier>(context);
     return Container(
       width: MediaQuery.of(context).size.width * 0.3,
-      height: MediaQuery.of(context).size.height * 0.230,
+      height: MediaQuery.of(context).size.height * 0.314,
       decoration: BoxDecoration(
         color: themeHelper.themeMode == ThemeMode.dark
             ? Color(0xFF1F1D2B) // outer dark background
             : Color(0xFFF1F0F7), // outer light background
         borderRadius: const BorderRadius.only(
-          topRight: Radius.circular(16),
-          topLeft: Radius.circular(16),
+          topRight: Radius.circular(8),
+          topLeft: Radius.circular(8),
+          bottomLeft: Radius.circular(8),
+          bottomRight: Radius.circular(8),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 6,
+            offset: Offset(0, 3),
+          ),
+        ],
+
       ),
       padding: const EdgeInsets.all(8),
       child: Column(
@@ -443,10 +456,10 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
               ),
             ),
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 30),
           Container(
             width: MediaQuery.of(context).size.width * 0.280,
-            height: MediaQuery.of(context).size.height * 0.135,
+            height: MediaQuery.of(context).size.height * 0.145,
             decoration: BoxDecoration(
               color: themeHelper.themeMode == ThemeMode.dark
                   ? Color(0xFF273142)
@@ -574,7 +587,7 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
 
           /// FIRST ROW
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildSummaryCard(
                   TextConstants.openingAmount,
@@ -582,21 +595,21 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
                   Color(0xFFD3EAFF),
                   "assets/opening-amount.png",
                   Color(0xFF487FFF)),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.006),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.008),
               _buildSummaryCard(
                   TextConstants.totalTransactions,
                   '${shift.totalSales}',
                   Color(0xFFF1E2FF),
                   "assets/total_orders.png",
                   Color(0xFF8252E9)),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.006),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.008),
               _buildSummaryCard(
                   TextConstants.saleAmount,
                   '${TextConstants.currencySymbol}${shift.totalSaleAmount.toStringAsFixed(2)}',
                   Color(0xFFFDE9DB),
                   "assets/sale_amount.png",
                   Color(0xFFFE8B3E)),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.006),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.008),
               _buildSummaryCard(
                 "Till Amount",
                 '${shift.tillAmount < 0 ? '-${TextConstants.currencySymbol}${shift.tillAmount.abs().toStringAsFixed(2)}'
@@ -605,13 +618,13 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
                 "assets/svg/cash_drawer.svg",
                 Color(0xFFEDC531),
               ),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.006),
-              _buildSummaryCard(
-                  TextConstants.closingAmount,
-                  '${TextConstants.currencySymbol}${shift.closingBalance.toStringAsFixed(2)}',
-                  Color(0xFFD2FFF3),
-                  "assets/closing_amount.png",
-                  Color(0xFF0F8B6A)),
+              // SizedBox(width: MediaQuery.of(context).size.width * 0.006),
+              // _buildSummaryCard(
+              //     TextConstants.closingAmount,
+              //     '${TextConstants.currencySymbol}${shift.closingBalance.toStringAsFixed(2)}',
+              //     Color(0xFFD2FFF3),
+              //     "assets/closing_amount.png",
+              //     Color(0xFF0F8B6A)),
             ],
           ),
 
@@ -619,42 +632,56 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
 
           /// SECOND ROW
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              _buildSummaryCard(
+                  TextConstants.closingAmount,
+                  '${TextConstants.currencySymbol}${shift.closingBalance.toStringAsFixed(2)}',
+                  Color(0xFFD2FFF3),
+                  "assets/closing_amount.png",
+                  Color(0xFF0F8B6A)),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.008),
+
               _buildSummaryCard(
                   "Card Payment",
                   '${TextConstants.currencySymbol}${shift.cardTotal.toStringAsFixed(2)}',
                   Color(0xFFD5FFD9),
-                  "assets/Card_payments.png",
+                  "assets/Card_payment.png",
                   Color(0xFF0AAD1B)),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.006),
-              _buildSummaryCard(
-                  "EBT Payment",
-                  '${TextConstants.currencySymbol}${shift.ebtTotal.toStringAsFixed(2)}',
-                  Color(0xFFE4DDD6),
-                  "assets/ebt_payments.svg",
-                  Color(0xFF6F4518)),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.006),
-              _buildSummaryCard(
-                  "Cashback",
-                  '${TextConstants.currencySymbol}${shift.cashbackAmount.toStringAsFixed(2)}',
-                  Color(0xFFFFE5EC),
-                  "assets/cashback_bill.png",
-                  Color(0xFFFB6F92)),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.006),
-              _buildSummaryCard(
-                  "Payout",
-                  '${TextConstants.currencySymbol}${shift.payoutTotal.toStringAsFixed(2)}',
-                  Color(0xFFCEE7F5),
-                  "assets/payout_bill.png",
-                  Color(0xFF2274A5)),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.006),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.008),
               _buildSummaryCard(
                   "Refund Amount",
                   '${TextConstants.currencySymbol}${shift.refundTotal.toStringAsFixed(2)}',
                   Color(0xFFFFE1E5),
                   "assets/refund.png",
                   Color(0xFFC71F37)),
+              // _buildSummaryCard(
+              //     "EBT Payment",
+              //     '${TextConstants.currencySymbol}${shift.ebtTotal.toStringAsFixed(2)}',
+              //     Color(0xFFE4DDD6),
+              //     "assets/ebt_payments.svg",
+              //     Color(0xFF6F4518)),
+              // SizedBox(width: MediaQuery.of(context).size.width * 0.006),
+              // _buildSummaryCard(
+                  // "Cashback",
+                  // '${TextConstants.currencySymbol}${shift.cashbackAmount.toStringAsFixed(2)}',
+                  // Color(0xFFFFE5EC),
+                  // "assets/cashback_bill.png",
+                  // Color(0xFFFB6F92)),
+              // SizedBox(width: MediaQuery.of(context).size.width * 0.006),
+              // _buildSummaryCard(
+              //     "Payout",
+              //     '${TextConstants.currencySymbol}${shift.payoutTotal.toStringAsFixed(2)}',
+              //     Color(0xFFCEE7F5),
+              //     "assets/payout_bill.png",
+              //     Color(0xFF2274A5)),
+              // SizedBox(width: MediaQuery.of(context).size.width * 0.006),
+              // _buildSummaryCard(
+              //     "Refund Amount",
+              //     '${TextConstants.currencySymbol}${shift.refundTotal.toStringAsFixed(2)}',
+              //     Color(0xFFFFE1E5),
+              //     "assets/refund.png",
+              //     Color(0xFFC71F37)),
             ],
           ),
         ],
@@ -672,8 +699,8 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
     return Container(
       height: MediaQuery.of(context).size.height * 0.125,
       width: sidebarPosition == SidebarPosition.bottom
-          ? MediaQuery.of(context).size.width * 0.125
-          : MediaQuery.of(context).size.width * 0.112,
+          ? MediaQuery.of(context).size.width * 0.158
+          : MediaQuery.of(context).size.width * 0.141,
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(8),
@@ -683,36 +710,23 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
         children: [
 
           /// CURVED LEFT INDICATOR
-          Positioned(
+          Positioned.fill(
             left: -1,
-            top: 30,
-            child: Container(
-              height: 30,
-              width: 4,
-              decoration: BoxDecoration(
-                color: circleBgColor,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(10),
-                  bottomRight: Radius.circular(10),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: circleBgColor.withOpacity(0.45),
-
-                    /// spreads all around
-                    spreadRadius: 2,
-
-                    /// blur softness
-                    blurRadius: 20,
-
-                    /// keeps glow centered
-                    offset: Offset(10, 0),
+            right: null,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 4,
+                decoration: BoxDecoration(
+                  color: circleBgColor,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
                   ),
-                ],
+                ),
               ),
             ),
           ),
-
           /// MAIN CONTENT
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -1109,7 +1123,7 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
                     columns: [
                       DataColumn(
                         label: Container(
-                          width: MediaQuery.of(context).size.width * 0.05,
+                          width: MediaQuery.of(context).size.width * 0.14,
                           // decoration: BoxDecoration(
                           //   borderRadius: BorderRadius.circular(19)
                           // ),
@@ -1125,7 +1139,7 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
                       ),
                       DataColumn(
                         label: Container(
-                          width: MediaQuery.of(context).size.width * 0.05,
+                          width: MediaQuery.of(context).size.width * 0.14,
                           child: Text(
                             TextConstants.vendor,
                             style: TextStyle(
@@ -1139,7 +1153,7 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
                       DataColumn(
                         label: Container(
                           width:
-                          MediaQuery.of(context).size.width * 0.135,
+                          MediaQuery.of(context).size.width * 0.20,
                           child: Text(
                             TextConstants.note,
                             style: TextStyle(
@@ -1152,7 +1166,7 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
                       ),
                       DataColumn(
                         label: Container(
-                          width: MediaQuery.of(context).size.width * 0.05,
+                          width: MediaQuery.of(context).size.width * 0.12,
                           child: Text(
                             TextConstants.purpose,
                             style: TextStyle(
@@ -1165,7 +1179,7 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
                       ),
                       DataColumn(
                         label: Container(
-                          width: MediaQuery.of(context).size.width * 0.12,
+                          width: MediaQuery.of(context).size.width * 0.15,
                           child: Text(
                             'Action',
                             style: TextStyle(

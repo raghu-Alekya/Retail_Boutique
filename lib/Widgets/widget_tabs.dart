@@ -26,6 +26,7 @@ import '../Helper/url_helper.dart';
 import '../Models/Assets/asset_model.dart';
 import '../Models/Orders/orders_model.dart';
 import '../Models/Search/product_custom_item_model.dart' as model;
+import '../Preferences/pinaka_preferences.dart';
 import '../Repositories/Assets/asset_repository.dart';
 import '../Repositories/Orders/order_repository.dart';
 import '../Repositories/Search/product_search_repository.dart';
@@ -67,7 +68,8 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
   // Discount values
   String _discountValue = "0.00%";
   bool _isPercentageSelected = true;
-
+  bool isPayoutEnabled = false;
+  bool isCashbackEnabled = false;
   // Coupon value
   String _couponCode = "";
   String _cashbackAmount = "";
@@ -336,8 +338,27 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
     // Replace the old fetch block in initState with this:
     _fetchCustomItemTemplate();   // No .then() needed anymore
     _fetchCategoriesWithTax();   // ← NEW
+    _loadPayoutPermission();
+    // Inside initState()
+    _loadCashbackPermission();
   }
 
+  // Add method
+
+  Future<void> _loadCashbackPermission() async {
+    bool value = await PinakaPreferences.getCashbackEnabled();
+
+    setState(() {
+      isCashbackEnabled = value;
+    });
+  }
+  Future<void> _loadPayoutPermission() async {
+    bool value = await PinakaPreferences.getPayoutEnabled();
+
+    setState(() {
+      isPayoutEnabled = value;
+    });
+  }
   Future<void> _loadTaxes() async {
     setState(() => _isTaxLoading = true);
 
@@ -558,6 +579,7 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
                     color: themeHelper.themeMode == ThemeMode.dark
                         ?  Color(0xFF313441)
                         : Color(0xFF8EAAD8)),
+              if (isCashbackEnabled)
               _buildTab(
                   1,
                   SvgUtils.cashbackIcon,
@@ -594,6 +616,7 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
                     color: themeHelper.themeMode == ThemeMode.dark
                         ?  Color(0xFF313441)
                         : Color(0xFF8EAAD8)),
+              if (isPayoutEnabled)
               _buildTab(
                   3,
                   SvgUtils.addPayoutIcon,
@@ -697,11 +720,15 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
       case 0:
         return _buildDiscountsTab();
       case 1:
-        return _buildCashbackTab();
+        return isCashbackEnabled
+            ? _buildCashbackTab()
+            : const SizedBox();
       case 2:
         return _buildCustomItemTab(context);
       case 3:
-        return _buildPayoutsTab();
+        return isPayoutEnabled
+            ? _buildPayoutsTab()
+            : const SizedBox();
       default:
         return const SizedBox();
     }

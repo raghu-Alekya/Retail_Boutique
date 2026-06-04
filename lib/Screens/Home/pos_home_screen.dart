@@ -36,7 +36,12 @@ class _POSHomeScreenState extends State<POSHomeScreen> with LayoutSelectionMixin
   void initState() {
     super.initState();
     _selectedSidebarIndex = widget.lastSelectedIndex ?? 0;
-    _activeTabIndex = _selectedSidebarIndex.clamp(0, 2);
+
+    if (_selectedSidebarIndex == 1) {
+      _activeTabIndex = 1;
+    } else {
+      _activeTabIndex = 0;
+    }
   }
 
   void _refreshOrderList() {
@@ -46,13 +51,11 @@ class _POSHomeScreenState extends State<POSHomeScreen> with LayoutSelectionMixin
   Screen _getScreenForIndex(int index) {
     switch (index) {
       case 0:
-        return Screen.FASTKEY;
-      case 1:
         return Screen.CATEGORY;
-      case 2:
+      case 1:
         return Screen.ADD;
       default:
-        return Screen.FASTKEY;
+        return Screen.CATEGORY;
     }
   }
 
@@ -107,13 +110,15 @@ class _POSHomeScreenState extends State<POSHomeScreen> with LayoutSelectionMixin
                       onSidebarItemSelected: (index) {
                         setState(() {
                           _selectedSidebarIndex = index;
-                          if (index < 3) {
-                            _activeTabIndex = index;
+                          if (index == 0) {
+                            _activeTabIndex = 0;
+                          } else if (index == 1) {
+                            _activeTabIndex = 1;
                           }
                         });
                       },
                       isVertical: true,
-                      callbackOnlyIndices: const {0, 1, 2},
+                      callbackOnlyIndices: const {0, 1},
                     ),
                   if (sidebarPosition == SidebarPosition.right ||
                       (sidebarPosition == SidebarPosition.bottom && orderPanelPosition == OrderPanelPosition.left))
@@ -127,7 +132,7 @@ class _POSHomeScreenState extends State<POSHomeScreen> with LayoutSelectionMixin
                     child: IndexedStack(
                       index: _activeTabIndex,
                       children: [
-                        FastKeyScreen(embedInShell: true),
+                        // FastKeyScreen(embedInShell: true),
                         CategoriesScreen(embedInShell: true),
                         AddScreen(embedInShell: true),
                       ],
@@ -147,13 +152,15 @@ class _POSHomeScreenState extends State<POSHomeScreen> with LayoutSelectionMixin
                       onSidebarItemSelected: (index) {
                         setState(() {
                           _selectedSidebarIndex = index;
-                          if (index < 3) {
-                            _activeTabIndex = index;
+                          if (index == 0) {
+                            _activeTabIndex = 0;
+                          } else if (index == 1) {
+                            _activeTabIndex = 1;
                           }
                         });
                       },
                       isVertical: true,
-                      callbackOnlyIndices: const {0, 1, 2},
+                      callbackOnlyIndices: const {0, 1},
                     ),
                 ],
               ),
@@ -164,13 +171,15 @@ class _POSHomeScreenState extends State<POSHomeScreen> with LayoutSelectionMixin
                 onSidebarItemSelected: (index) {
                   setState(() {
                     _selectedSidebarIndex = index;
-                    if (index < 3) {
-                      _activeTabIndex = index;
+                    if (index == 0) {
+                      _activeTabIndex = 0;
+                    } else if (index == 1) {
+                      _activeTabIndex = 1;
                     }
                   });
                 },
                 isVertical: false,
-                callbackOnlyIndices: const {0, 1, 2},
+                callbackOnlyIndices: const {0, 1},
               ),
           ],
         ),

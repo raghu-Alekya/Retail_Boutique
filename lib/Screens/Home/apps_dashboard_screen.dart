@@ -33,8 +33,7 @@ class AppsDashboardScreen extends StatefulWidget {
 class _AppsDashboardScreenState extends State<AppsDashboardScreen>
     with LayoutSelectionMixin {
   final List<String> items = List.generate(18, (index) => 'Bud Light');
-  int _selectedSidebarIndex =
-      4; //Build #1.0.2 : By default fast key should be selected after login
+  int _selectedSidebarIndex = 3; //Build #1.0.2 : By default fast key should be selected after login
   DateTime now = DateTime.now();
   List<int> quantities = [1, 1, 1, 1];
   bool isLoading = true; // Add a loading state
@@ -192,6 +191,23 @@ class _AppsDashboardScreenState extends State<AppsDashboardScreen>
                                 ),
                                 _buildCard(
                                   icon:
+                                  themeHelper.themeMode == ThemeMode.dark
+                                      ? Image.asset(
+                                    "assets/stock_inventory_dark.png",
+                                  )
+                                      : Image.asset("assets/img.png"),
+                                  cardIndex: 2, // Updated index to 2
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => InventoryScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                _buildCard(
+                                  icon:
                                       themeHelper.themeMode == ThemeMode.dark
                                           ? Image.asset(
                                             "assets/safedrop_dark.png",
@@ -213,23 +229,23 @@ class _AppsDashboardScreenState extends State<AppsDashboardScreen>
                                           }
                                           : () {},
                                 ).withOpacity(_isSafeDropEnabled ? 1.0 : 0.0),
-                                _buildCard(
-                                  icon:
-                                      themeHelper.themeMode == ThemeMode.dark
-                                          ? Image.asset(
-                                            "assets/stock_inventory_dark.png",
-                                          )
-                                          : Image.asset("assets/img.png"),
-                                  cardIndex: 2, // Updated index to 2
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => InventoryScreen(),
-                                      ),
-                                    );
-                                  },
-                                ),
+                                // _buildCard(
+                                //   icon:
+                                //       themeHelper.themeMode == ThemeMode.dark
+                                //           ? Image.asset(
+                                //             "assets/stock_inventory_dark.png",
+                                //           )
+                                //           : Image.asset("assets/img.png"),
+                                //   cardIndex: 2, // Updated index to 2
+                                //   onTap: () {
+                                //     Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //         builder: (context) => InventoryScreen(),
+                                //       ),
+                                //     );
+                                //   },
+                                // ),
                               ],
                             ),
                           ),

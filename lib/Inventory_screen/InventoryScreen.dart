@@ -81,7 +81,7 @@ class _InventoryScreenState extends State<InventoryScreen>
 
   // UI State
   int _selectedTab = 0;
-  int _selectedSidebarIndex = 4;
+  int _selectedSidebarIndex = 3;
   late ShiftBloc shiftBloc;
   final PinakaPreferences _preferences = PinakaPreferences();
 
@@ -153,7 +153,7 @@ class _InventoryScreenState extends State<InventoryScreen>
         TextEditingController(text: _currentSalePrice);
     _updateAttributeControllers();
 
-    _selectedSidebarIndex = widget.lastSelectedIndex ?? 4;
+    _selectedSidebarIndex = widget.lastSelectedIndex ?? 3;
     shiftBloc = ShiftBloc(ShiftRepository());
 
     _initializeAddProductBloc();
