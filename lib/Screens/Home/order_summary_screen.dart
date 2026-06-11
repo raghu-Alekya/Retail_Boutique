@@ -6269,8 +6269,10 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                                 return TextField(
                                   controller: mobileController,
                                   enabled: !isCustomerFieldDisabled,
-                                  keyboardType: TextInputType.emailAddress,
+                                  keyboardType: TextInputType.number,
                                   inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(10),
                                     TextInputFormatter.withFunction(
                                         (oldValue, newValue) {
                                       final text = newValue.text;
@@ -6301,7 +6303,7 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                                     });
                                   },
                                   decoration: const InputDecoration(
-                                    hintText: 'Add Mobile No or Email',
+                                    hintText: 'Add Mobile Number',
                                     border: InputBorder.none,
                                     isCollapsed: true,
                                     counterText: '',
@@ -8975,6 +8977,7 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
                                   // Otherwise show the main balance
                                   else
                                     Container(
+                                      height: ResponsiveLayout.getHeight(90),
                                       padding: const EdgeInsets.only(
                                         top: 6,
                                         right: 6,
@@ -11001,7 +11004,7 @@ ${JsonEncoder.withIndent('  ').convert(paymentEntry)}
             child: Opacity(
               opacity: isEnabled ? 1.0 : 0.5,
               child: Container(
-                width: ResponsiveLayout.getWidth(178),
+                width: ResponsiveLayout.getWidth(240),
                 height: ResponsiveLayout.getHeight(54),
                 margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                 decoration: BoxDecoration(

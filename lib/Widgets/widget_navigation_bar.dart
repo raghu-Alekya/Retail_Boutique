@@ -19,6 +19,7 @@ import '../Blocs/Auth/logout_bloc.dart';
 import '../Preferences/pinaka_preferences.dart';
 import '../Repositories/Auth/logout_repository.dart';
 import '../Repositories/Orders/refund_orderlist_repository.dart';
+import '../Repositories/session_valadition_repository.dart';
 import '../Screens/Home/Settings/settings_screen.dart';
 import '../Screens/Home/shift_open_close_balance.dart';
 import '../Screens/Home/total_orders_screen.dart';
@@ -1066,7 +1067,7 @@ class _NavigationBarState extends State<NavigationBar> {
                                 if (kDebugMode)
                                   print(
                                       "Logout confirmed, initiating logout process");
-
+                                TokenValidationService.logoutStarted();
                                 // Show loader
                                 showDialog(
                                   context: context,

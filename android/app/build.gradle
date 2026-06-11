@@ -17,7 +17,7 @@ if (keystorePropertiesFile.exists()) {
 project.buildDir = "${rootProject.projectDir}/../build/${project.name}"
 
 android {
-    namespace "com.pinaka.pos"
+    namespace "com.pinaka.boutique"
     compileSdk 36
 
     compileOptions {
@@ -30,7 +30,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.pinaka.pos"
+        applicationId "com.pinaka.boutique"
         minSdkVersion 23
         targetSdk 35
 

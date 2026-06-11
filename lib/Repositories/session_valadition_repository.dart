@@ -13,7 +13,16 @@ import '../Widgets/session_ended_dialog.dart';
 
 class TokenValidationService {
   static Timer? _timer;
+  static bool _sessionEnding = false;
 
+  static void logoutStarted() {
+    _sessionEnding = true;
+    stopValidation();
+  }
+
+  static void loginStarted() {
+    _sessionEnding = false;
+  }
   /// Start checking token every 30 seconds
   static void startValidation({
     required String token,

@@ -1,4 +1,7 @@
-package com.pinaka.pos
+package com.pinaka.boutique
+//com.pinaka.pos
+
+//com.pinakapos.alekta
 
 import android.app.Activity
 import android.app.Presentation
@@ -1468,7 +1471,7 @@ class MainActivity : FlutterActivity() {
                     "ADD CLICKED: $customerValue"
                 )
 
-                showRedeemPopup(customerValue)
+//                showRedeemPopup(customerValue)
 
                 MethodChannel(
                     mainActivity.flutterEngine!!
@@ -2194,48 +2197,48 @@ class MainActivity : FlutterActivity() {
                 )
             }
         }
-        fun showRedeemPopup(contact: String) {
-            Handler(Looper.getMainLooper()).post {
-                isRedeemPopupOpen = true
-
-                val root = findViewById<FrameLayout>(android.R.id.content)
-
-                root.findViewWithTag<View>("redeem_popup")?.let {
-                    root.removeView(it)
-                }
-
-                val popupView = LayoutInflater.from(context).inflate(
-                    R.layout.redeem_popup_layout,
-                    root,
-                    false
-                )
-
-                popupView.tag = "redeem_popup"
-
-                redeemPointsTextView =
-                    popupView.findViewById<TextView>(R.id.txt_points)
-
-                redeemPointsTextView?.visibility = View.VISIBLE
-                redeemPointsTextView?.text = "Fetching points..."
-                popupView.findViewById<Button>(R.id.btn_ok)
-                    .setOnClickListener {
-                        isRedeemPopupOpen = false
-
-                        root.removeView(popupView)
-                        redeemPointsTextView = null
-
-                        MethodChannel(
-                            mainActivity.flutterEngine!!
-                                .dartExecutor.binaryMessenger,
-                            "com.example.flutter_customer_display/sunmi_display"
-                        ).invokeMethod(
-                            "customerDisplayPopupClosed",
-                            null
-                        )
-                    }
-                root.addView(popupView)
-            }
-        }
+//        fun showRedeemPopup(contact: String) {
+//            Handler(Looper.getMainLooper()).post {
+//                isRedeemPopupOpen = true
+//
+//                val root = findViewById<FrameLayout>(android.R.id.content)
+//
+//                root.findViewWithTag<View>("redeem_popup")?.let {
+//                    root.removeView(it)
+//                }
+//
+//                val popupView = LayoutInflater.from(context).inflate(
+//                    R.layout.redeem_popup_layout,
+//                    root,
+//                    false
+//                )
+//
+//                popupView.tag = "redeem_popup"
+//
+//                redeemPointsTextView =
+//                    popupView.findViewById<TextView>(R.id.txt_points)
+//
+//                redeemPointsTextView?.visibility = View.VISIBLE
+//                redeemPointsTextView?.text = "Fetching points..."
+//                popupView.findViewById<Button>(R.id.btn_ok)
+//                    .setOnClickListener {
+//                        isRedeemPopupOpen = false
+//
+//                        root.removeView(popupView)
+//                        redeemPointsTextView = null
+//
+//                        MethodChannel(
+//                            mainActivity.flutterEngine!!
+//                                .dartExecutor.binaryMessenger,
+//                            "com.example.flutter_customer_display/sunmi_display"
+//                        ).invokeMethod(
+//                            "customerDisplayPopupClosed",
+//                            null
+//                        )
+//                    }
+//                root.addView(popupView)
+//            }
+//        }
         fun showThankYouLayout() {
             isCustomerLayoutActive = false
             isRedeemPopupOpen = false

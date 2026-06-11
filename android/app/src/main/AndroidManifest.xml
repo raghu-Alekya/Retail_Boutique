@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.USB_PERMISSION" />
 
     <application
-        android:label="Pinaka POS"
+        android:label="Boutique POS"
         android:name="${applicationName}"
         android:icon="@mipmap/logo">
         <activity

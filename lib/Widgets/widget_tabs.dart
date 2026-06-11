@@ -68,7 +68,9 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
   // Discount values
   String _discountValue = "0.00%";
   bool _isPercentageSelected = true;
-
+  bool isPayoutEnabled = false;
+  bool isCashbackEnabled = false;
+  final FocusNode _barcodeFocusNode = FocusNode();
   // Coupon value
   String _couponCode = "";
   String _cashbackAmount = "";
@@ -136,7 +138,15 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
   String normalizeSku(String s) {
     return OrderHelper.normalizeSku(s);
   }
-
+  void _restoreScannerFocus() {
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (mounted) {
+        // Barcode scanning is handled globally (order panel listener).
+        // Clearing focus prevents scanner Enter/key events from reopening dropdowns.
+        FocusManager.instance.primaryFocus?.unfocus();
+      }
+    });
+  }
   Future<String> _getTokenFromDb() async {
     try {
       final db = await DBHelper.instance.database;
@@ -565,6 +575,7 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
                     color: themeHelper.themeMode == ThemeMode.dark
                         ? Color(0xFF313441)
                         : Color(0xFF8EAAD8)),
+              if (isCashbackEnabled)
               _buildTab(
                   1,
                   SvgUtils.cashbackIcon,
@@ -601,6 +612,7 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
                     color: themeHelper.themeMode == ThemeMode.dark
                         ? Color(0xFF313441)
                         : Color(0xFF8EAAD8)),
+              if (isPayoutEnabled)
               _buildTab(
                   3,
                   SvgUtils.addPayoutIcon,
@@ -705,11 +717,15 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
       case 0:
         return _buildDiscountsTab();
       case 1:
-        return _buildCashbackTab();
+        return isCashbackEnabled
+            ? _buildCashbackTab()
+            : const SizedBox();
       case 2:
         return _buildCustomItemTab(context);
       case 3:
-        return _buildPayoutsTab();
+        return isPayoutEnabled
+            ? _buildPayoutsTab()
+            : const SizedBox();
       default:
         return const SizedBox();
     }
@@ -1223,6 +1239,7 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
                 const SizedBox(width: 10),
 
                 // === FIXED & CLEAN CATEGORY DROPDOWN ===
+                // === FIXED & CLEAN CATEGORY DROPDOWN ===
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1252,13 +1269,14 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: DropdownButton<String>(
+
                           value: (_categoriesList.isEmpty ||
-                                  _selectedCategoryName == "Select Category" ||
-                                  !_categoriesList.any((cat) =>
-                                      cat['name']?.toString().trim() ==
-                                      _selectedCategoryName.trim()))
+                              _selectedCategoryName == "Select Category" ||
+                              !_categoriesList.any((cat) =>
+                              cat['name']?.toString().trim() == _selectedCategoryName.trim()))
                               ? "Select Category"
                               : _selectedCategoryName,
+
                           isExpanded: true,
                           underline: const SizedBox(),
                           icon: const Icon(Icons.arrow_drop_down, size: 20),
@@ -1271,6 +1289,7 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
                           dropdownColor: themeHelper.themeMode == ThemeMode.dark
                               ? ThemeNotifier.primaryBackground
                               : Colors.white,
+
                           items: [
                             // Placeholder
                             const DropdownMenuItem<String>(
@@ -1282,8 +1301,7 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
                             ),
                             ..._categoriesList.map((cat) {
                               final name = cat['name']?.toString() ?? "";
-                              final tax =
-                                  cat['pos_tax_percent']?.toString() ?? "0";
+                              final tax = cat['pos_tax_percent']?.toString() ?? "0";
                               return DropdownMenuItem<String>(
                                 value: name,
                                 child: Text(
@@ -1294,22 +1312,24 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
                               );
                             }).toList(),
                           ],
-                          onChanged: (newValue) {
-                            if (newValue != null &&
-                                newValue != "Select Category") {
+                            onChanged: (newValue) {
+                              if (newValue == null || newValue == "Select Category") return;
+
                               setState(() {
                                 _selectedCategoryName = newValue;
                               });
-                            }
-                          },
-                        ),
+
+                              _restoreScannerFocus(); // IMPORTANT
+                            }                        ),
                       ),
                     ],
                   ),
                 ),
+
               ],
             ),
           ),
+
 
           const SizedBox(height: 20),
 
@@ -4213,7 +4233,12 @@ class _AppScreenTabWidgetState extends State<AppScreenTabWidget>
         _skuController.clear();
         _isEnteringItemPrice = false;
         _selectedCategoryName = "Select Category"; // Reset after successful add
+        // Move away from Custom Item tab so scanning doesn't interact with dropdown UI.
+        _selectedTabIndex = 0;
+        _persistedTabIndex = 0;
       });
+
+      _restoreScannerFocus();
 
       await _orderHelper.loadData();
       await _loadOrderData();

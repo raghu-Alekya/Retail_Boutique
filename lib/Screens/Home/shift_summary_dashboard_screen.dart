@@ -389,8 +389,8 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
   Widget _buildTimeTrackingSection(Shift shift) {
     final themeHelper = Provider.of<ThemeNotifier>(context);
     return Container(
-      width: MediaQuery.of(context).size.width * 0.3,
-      height: MediaQuery.of(context).size.height * 0.314,
+      width: MediaQuery.of(context).size.width * 0.30,
+      height: MediaQuery.of(context).size.height * 0.295,
       decoration: BoxDecoration(
         color: themeHelper.themeMode == ThemeMode.dark
             ? Color(0xFF1F1D2B) // outer dark background
@@ -458,7 +458,7 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
           ),
           SizedBox(height: 30),
           Container(
-            width: MediaQuery.of(context).size.width * 0.280,
+            width: MediaQuery.of(context).size.width * 0.290,
             height: MediaQuery.of(context).size.height * 0.145,
             decoration: BoxDecoration(
               color: themeHelper.themeMode == ThemeMode.dark
@@ -481,12 +481,12 @@ class _ShiftSummaryDashboardScreenState extends State<ShiftSummaryDashboardScree
               children: [
                 _buildTimeCard(TextConstants.startTime,
                     DateTimeHelper.extractTime(shift.startTime)),
-                SizedBox(width: MediaQuery.of(context).size.width * 0.0065),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.012),
                 _buildTimeCard(
                     TextConstants.duration,
                     DateTimeHelper.calculateDuration(
                         shift.startTime, shift.endTime)),
-                SizedBox(width: MediaQuery.of(context).size.width * 0.0065),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.012),
                 _buildTimeCard(
                     TextConstants.endTime,
                     shift.endTime.isEmpty

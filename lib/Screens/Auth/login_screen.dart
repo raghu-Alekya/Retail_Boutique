@@ -282,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         await PinakaPreferences.savePayoutEnabled(isPayoutEnabled);
                                         final pin = _password.join();
                                         final token = loginResponse.token ?? "";
-
+                                        TokenValidationService.stopValidation();
                                         TokenValidationService.startValidation(
                                           token: token,
                                           pin: pin,
@@ -502,6 +502,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                                         // Build #1.0.166: Trigger logout API call with _password PIN
                                                         final pin = _password.join();
+                                                        TokenValidationService.stopValidation();
                                                         logoutBloc.performLogoutByEmpPin(int.tryParse(pin));
 
                                                         // Show circular loader
